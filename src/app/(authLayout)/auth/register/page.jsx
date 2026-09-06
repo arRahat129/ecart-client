@@ -6,6 +6,8 @@ import { Button, Spinner } from '@heroui/react';
 import { FiEye, FiEyeOff, FiImage, FiLink, FiLock, FiMail, FiUpload, FiUser, FiX } from 'react-icons/fi';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 async function uploadToImgBB(file) {
     const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
@@ -123,8 +125,27 @@ function AvatarUploader({ value, onChange }) {
 }
 
 const RegisterPage = () => {
+    const { register } = useAuth();
+    const router = useRouter();
     const [form, setForm] = useState({ name: '', email: '', password: '', image: '' });
+    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            await register(form.name, form.email, form.password, form.image);
+            toast.success('Account created! Please login.');
+            router.push('/auth/login');
+        }
+        catch (err) {
+            toast.error(err.message);
+        }
+        finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-md">
@@ -133,7 +154,7 @@ const RegisterPage = () => {
                 <p className="text-zinc-500 text-sm mt-1">Start shopping in seconds</p>
             </div>
             <div className="bg-white rounded-2xl border border-zinc-200 shadow-xl shadow-blue-100/20 p-8">
-                <form className="flex flex-col gap-5">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
 
                     <div className="flex flex-col gap-1.5">
                         <label className="text-sm font-medium text-zinc-700">Full Name</label>

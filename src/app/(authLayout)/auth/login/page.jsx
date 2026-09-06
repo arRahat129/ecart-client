@@ -6,10 +6,30 @@ import { Button } from '@heroui/react';
 import Link from 'next/link';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 const LoginPage = () => {
+    const { login } = useAuth();
+    const router = useRouter();
     const [form, setForm] = useState({ email: '', password: '' });
+    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            await login(form.email, form.password);
+            toast.success('Welcome back!');
+            router.push('/');
+        } catch (err) {
+            toast.error(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-md">
@@ -18,7 +38,7 @@ const LoginPage = () => {
                 <p className="text-zinc-500 text-sm mt-1">Login to your account</p>
             </div>
             <div className="bg-white rounded-2xl border border-zinc-200 shadow-xl shadow-blue-100/20 p-8">
-                <form className="flex flex-col gap-5">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-5">
 
                     <div className="flex flex-col gap-1.5">
                         <label className="text-sm font-medium text-zinc-700">Email Address</label>
