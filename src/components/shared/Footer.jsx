@@ -1,10 +1,35 @@
 import Link from 'next/link';
 import { Button, Input } from '@heroui/react';
+import { LiaOpencart } from 'react-icons/lia';
 
 const footerLinks = [
-    { title: 'Shop', links: [{ label: 'All Products', href: '/products' }, { label: 'Electronics', href: '/products?category=Electronics' }, { label: 'Footwear', href: '/products?category=Footwear' }] },
-    { title: 'Account', links: [{ label: 'Login', href: '/auth/login' }, { label: 'Register', href: '/auth/register' }, { label: 'My Orders', href: '/orders' }] },
-    { title: 'Company', links: [{ label: 'About', href: '/about' }, { label: 'Contact', href: '/contact' }, { label: 'Privacy Policy', href: '/privacy' }] },
+    {
+        title: 'Shop',
+        links: [
+            { label: 'All Products', href: '/products' },
+            { label: 'Electronics', href: '/products?category=Electronics' },
+            { label: 'Footwear', href: '/products?category=Footwear' },
+            { label: 'Kitchen', href: '/products?category=Kitchen' },
+        ],
+    },
+    {
+        title: 'Account',
+        links: [
+            { label: 'Login', href: '/login' },
+            { label: 'Register', href: '/register' },
+            { label: 'My Orders', href: '/orders' },
+            { label: 'My Profile', href: '/profile' },
+        ],
+    },
+    {
+        title: 'Company',
+        links: [
+            { label: 'About', href: '/about' },
+            { label: 'Contact', href: '/contact' },
+            { label: 'Privacy Policy', href: '/privacy' },
+            { label: 'Terms of Service', href: '/terms' },
+        ],
+    },
 ];
 
 export default function Footer() {
@@ -16,7 +41,9 @@ export default function Footer() {
                     <div className="space-y-6 xl:col-span-1">
                         <Link href="/" className="flex items-center gap-2 group">
                             <div className="h-9 w-9 rounded-lg bg-blue-600 flex items-center justify-center transition-transform group-hover:scale-105">
-                                <span className="text-white font-black text-sm">eC</span>
+                                <span className="text-white font-black text-sm">
+                                    <LiaOpencart />
+                                </span>
                             </div>
                             <span className="text-2xl font-bold text-blue-900 tracking-wide">eCart</span>
                         </Link>
