@@ -103,7 +103,7 @@ const Navbar = () => {
                                         <Dropdown.Popover>
                                             <Dropdown.Menu aria-label="User menu">
                                                 <Dropdown.Item key="dashboard" textValue="Dashboard">
-                                                    <Link href="/profile" className="block w-full text-sm font-medium text-gray-700 hover:text-blue-600">Dashboard</Link>
+                                                    <Link href="/dashboard" className="block w-full text-sm font-medium text-gray-700 hover:text-blue-600">Dashboard</Link>
                                                 </Dropdown.Item>
                                                 <Dropdown.Item key="orders" textValue="Orders">
                                                     <Link href="/orders" className="block w-full text-sm font-medium text-gray-700 hover:text-blue-600">My Orders</Link>
@@ -167,7 +167,7 @@ const Navbar = () => {
                                                 <p className="text-xs text-slate-400">{user.email}</p>
                                             </div>
                                         </div>
-                                        <Link href="/profile" onClick={() => setMobileOpen(false)} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-600 hover:bg-blue-50/50 transition">Dashboard</Link>
+                                        <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-600 hover:bg-blue-50/50 transition">Dashboard</Link>
                                         <Link href="/orders" onClick={() => setMobileOpen(false)} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-600 hover:bg-blue-50/50 transition">My Orders</Link>
                                         <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="w-full text-left rounded-xl px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 transition">Log Out</button>
                                     </div>
