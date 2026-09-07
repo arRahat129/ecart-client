@@ -1,18 +1,23 @@
-import React from 'react';
-import { FiGrid, FiList, FiPackage, FiPlusSquare, FiShoppingBag, FiUser, FiUsers } from 'react-icons/fi';
+import {
+    FiGrid, FiPackage, FiShoppingBag, FiUsers,
+    FiPlusSquare, FiList, FiUser, FiTrendingUp
+} from 'react-icons/fi';
 
-const sidebarLinks = [
-    { href: '/dashboard', label: 'Overview', icon: FiGrid, roles: ['admin', 'customer'] },
-
-    { href: '/dashboard/admin/products', label: 'Product Approvals', icon: FiPackage, roles: ['admin'], group: 'Admin' },
-    { href: '/dashboard/admin/orders', label: 'All Orders', icon: FiShoppingBag, roles: ['admin'], group: 'Admin' },
-    { href: '/dashboard/admin/customers', label: 'Customers', icon: FiUsers, roles: ['admin'], group: 'Admin' },
-
-    { href: '/dashboard/submit-product', label: 'Submit Product', icon: FiPlusSquare, roles: ['customer'], group: 'Seller' },
-    { href: '/dashboard/my-products', label: 'My Submissions', icon: FiList, roles: ['customer'], group: 'Seller' },
-    { href: '/dashboard/orders', label: 'My Orders', icon: FiShoppingBag, roles: ['customer'], group: 'Buyer' },
-
-    { href: '/dashboard/profile', label: 'Profile', icon: FiUser, roles: ['admin', 'customer'], group: 'Account' },
+// Admin sidebar links
+export const adminLinks = [
+    { href: '/dashboard/admin', label: 'Overview', icon: FiGrid },
+    { href: '/dashboard/admin/products', label: 'Product Approvals', icon: FiPackage, group: 'Catalog' },
+    { href: '/dashboard/admin/orders', label: 'All Orders', icon: FiShoppingBag, group: 'Catalog' },
+    { href: '/dashboard/admin/customers', label: 'Customers', icon: FiUsers, group: 'Catalog' },
+    { href: '/dashboard/admin/profile', label: 'Profile', icon: FiUser, group: 'Account' },
 ];
 
-export default sidebarLinks;
+// Customer sidebar links
+export const customerLinks = [
+    { href: '/dashboard/customer', label: 'Overview', icon: FiGrid },
+    { href: '/dashboard/customer/add-product', label: 'Add Product', icon: FiPlusSquare, group: 'Seller' },
+    { href: '/dashboard/customer/my-products', label: 'My Products', icon: FiList, group: 'Seller' },
+    { href: '/dashboard/customer/product-orders', label: 'Product Orders', icon: FiTrendingUp, group: 'Seller' },
+    { href: '/dashboard/customer/orders', label: 'My Orders', icon: FiShoppingBag, group: 'Buyer' },
+    { href: '/dashboard/customer/profile', label: 'Profile', icon: FiUser, group: 'Account' },
+];

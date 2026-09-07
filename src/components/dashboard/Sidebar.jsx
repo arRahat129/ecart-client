@@ -1,19 +1,22 @@
-import { useAuth } from '@/context/AuthContext';
-import { usePathname, useRouter } from 'next/navigation';
-import React from 'react';
-import toast from 'react-hot-toast';
-import sidebarLinks from './sidebarLinks';
-import { FiLogOut, FiUser, FiX } from 'react-icons/fi';
+'use client';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import { FiLogOut, FiUser, FiX } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 import { LiaOpencart } from 'react-icons/lia';
 
-const Sidebar = ({ mobileOpen, onClose }) => {
+const Sidebar = ({ links, mobileOpen, onClose }) => {
     const pathname = usePathname();
     const { user, logout } = useAuth();
     const router = useRouter();
 
-    const role = user?.role ?? 'customer';
-    const links = sidebarLinks.filter(l => l.roles.includes(role));
+    function handleLogout() {
+        logout();
+        toast.success('Logged out');
+        router.push('/');
+    }
 
     const grouped = links.reduce((acc, link) => {
         const key = link.group ?? '';
@@ -24,11 +27,7 @@ const Sidebar = ({ mobileOpen, onClose }) => {
         return acc;
     }, {});
 
-    function handleLogout() {
-        logout();
-        toast.success('Logged Out Successfully!');
-        router.push('/');
-    }
+    const baseHref = links[0]?.href ?? '/dashboard';
 
     const inner = (
         <div className="flex flex-col h-full">
@@ -42,40 +41,30 @@ const Sidebar = ({ mobileOpen, onClose }) => {
                     </div>
                     <span className="text-lg font-bold text-white tracking-wide">eCart</span>
                 </Link>
-                {
-                    onClose && (
-                        <button onClick={onClose} className="md:hidden text-zinc-400 hover:text-white transition p-1">
-                            <FiX size={20} />
-                        </button>
-                    )
-                }
+                {onClose && (
+                    <button onClick={onClose} className="md:hidden text-zinc-400 hover:text-white transition p-1">
+                        <FiX size={20} />
+                    </button>
+                )}
             </div>
 
             <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-                {
-                    Object.entries(grouped).map(([group, items]) => (
-                        <div key={group} className="mb-3">
-                            {
-                                group && (
-                                    <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 px-3 pb-1">{group}</p>
-                                )
-                            }
-                            {
-                                items.map(link => {
-                                    const Icon = link.icon;
-                                    const active = pathname === link.href || (link.href !== '/dashboard' && pathname.startsWith(link.href));
-                                    return (
-                                        <Link key={link.href} href={link.href} onClick={onClose}
-                                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${active ? 'bg-blue-600 text-white shadow-sm' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
-                                            <Icon size={16} />
-                                            {link.label}
-                                        </Link>
-                                    );
-                                })
-                            }
-                        </div>
-                    ))
-                }
+                {Object.entries(grouped).map(([group, items]) => (
+                    <div key={group} className="mb-3">
+                        {group && <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 px-3 pb-1">{group}</p>}
+                        {items.map(link => {
+                            const Icon = link.icon;
+                            const active = pathname === link.href || (link.href !== baseHref && pathname.startsWith(link.href));
+                            return (
+                                <Link key={link.href} href={link.href} onClick={onClose}
+                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${active ? 'bg-blue-600 text-white shadow-sm' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'}`}>
+                                    <Icon size={16} />
+                                    {link.label}
+                                </Link>
+                            );
+                        })}
+                    </div>
+                ))}
             </nav>
 
             <div className="border-t border-zinc-800 p-4 shrink-0">
@@ -89,29 +78,26 @@ const Sidebar = ({ mobileOpen, onClose }) => {
                         <p className="text-xs text-zinc-400 truncate">{user?.email}</p>
                     </div>
                 </div>
-                <button onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-red-400 transition">
+                <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-red-400 transition">
                     <FiLogOut size={15} /> Log Out
                 </button>
             </div>
         </div>
     );
+
     return (
         <>
             <aside className="hidden md:flex w-60 shrink-0 bg-zinc-900 border-r border-zinc-800 flex-col h-screen sticky top-0">
                 {inner}
             </aside>
-
-            {
-                mobileOpen && (
-                    <>
-                        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={onClose} />
-                        <aside className="fixed left-0 top-0 bottom-0 w-72 bg-zinc-900 border-r border-zinc-800 z-50 flex flex-col md:hidden">
-                            {inner}
-                        </aside>
-                    </>
-                )
-            }
+            {mobileOpen && (
+                <>
+                    <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={onClose} />
+                    <aside className="fixed left-0 top-0 bottom-0 w-72 bg-zinc-900 border-r border-zinc-800 z-50 flex flex-col md:hidden">
+                        {inner}
+                    </aside>
+                </>
+            )}
         </>
     );
 };
