@@ -7,21 +7,28 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/dashboard/Sidebar';
 import { FiMenu } from 'react-icons/fi';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { LiaOpencart } from 'react-icons/lia';
 
 const DashboardLayout = ({ children }) => {
     const { user, loading } = useAuth();
     const router = useRouter();
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        if (!loading && !user) {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (mounted && !loading && !user) {
             router.replace('/auth/login');
         }
-    }, [user, loading, router]);
+    }, [user, loading, router, mounted]);
 
-    if (loading) {
+    if (!mounted || loading) {
         return <LoadingSpinner fullPage />;
     }
+
     if (!user) {
         return null;
     }
@@ -37,7 +44,9 @@ const DashboardLayout = ({ children }) => {
                     </button>
                     <div className="flex items-center gap-2">
                         <div className="h-7 w-7 rounded-lg bg-blue-600 flex items-center justify-center">
-                            <span className="text-white font-black text-xs">eC</span>
+                            <span className="text-white font-black text-xs">
+                                <LiaOpencart />
+                            </span>
                         </div>
                         <span className="font-bold text-blue-900 text-base">eCart</span>
                     </div>
