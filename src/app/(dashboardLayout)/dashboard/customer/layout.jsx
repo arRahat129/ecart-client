@@ -16,13 +16,21 @@ const CustomerDashboardLayout = ({ children }) => {
 
     useEffect(() => {
         if (!loading) {
-            if (!user) router.replace('/auth/login');
-            else if (isAdmin) router.replace('/dashboard/admin');
+            if (!user) {
+                router.replace('/auth/login');
+            }
+            else if (isAdmin) {
+                router.replace('/dashboard/admin');
+            }
         }
     }, [user, loading, isAdmin, router]);
 
-    if (loading) return <LoadingSpinner fullPage />;
-    if (!user || isAdmin) return null;
+    if (loading) {
+        return <LoadingSpinner fullPage />;
+    }
+    if (!user || isAdmin) {
+        return null;
+    }
 
     return (
         <div className="flex h-screen overflow-hidden bg-zinc-50">
