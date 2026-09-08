@@ -61,6 +61,9 @@ const MyProductsPage = () => {
                 <p className="text-sm text-zinc-500 mt-0.5">{product.category} · ${parseFloat(product.price).toFixed(2)}</p>
               </div>
               <div className="flex flex-col items-end gap-2 shrink-0">
+                <Link href={`/dashboard/customer/my-products/${product._id}/edit`}>
+                  <Button size="sm" variant="flat" className="font-semibold rounded-xl">Edit</Button>
+                </Link>
                 <Chip size="sm" color={STATUS_COLOR[product.status] ?? 'default'} className="font-semibold text-xs capitalize">
                   {STATUS_LABEL[product.status] ?? product.status}
                 </Chip>
