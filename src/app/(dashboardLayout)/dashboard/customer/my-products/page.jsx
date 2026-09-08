@@ -32,9 +32,9 @@ const MyProductsPage = () => {
           <h1 className="text-2xl font-extrabold text-zinc-900">My Submissions</h1>
           <p className="text-zinc-500 text-sm mt-1">Track the status of your submitted products</p>
         </div>
-        <Link href="/dashboard/submit-product">
+        <Link href="/dashboard/customer/add-product">
           <Button className="h-10 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition flex items-center gap-2">
-            <FiPlusSquare size={15} /> Submit New
+            <FiPlusSquare size={15} /> Add New
           </Button>
         </Link>
       </div>
@@ -42,10 +42,10 @@ const MyProductsPage = () => {
       {products.length === 0 ? (
         <div className="text-center py-20">
           <FiPackage size={48} className="mx-auto text-zinc-300 mb-4" />
-          <p className="text-zinc-500 text-lg font-medium">No submissions yet</p>
-          <p className="text-zinc-400 text-sm mt-1 mb-6">Submit your first product for review.</p>
-          <Link href="/dashboard/submit-product">
-            <Button className="h-10 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700">Submit a Product</Button>
+          <p className="text-zinc-500 text-lg font-medium">No Products yet</p>
+          <p className="text-zinc-400 text-sm mt-1 mb-6">Add your first product for review.</p>
+          <Link href="/dashboard/customer/add-product">
+            <Button className="h-10 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700">Add a Product</Button>
           </Link>
         </div>
       ) : (

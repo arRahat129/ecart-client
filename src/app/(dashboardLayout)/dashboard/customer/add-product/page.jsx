@@ -33,7 +33,7 @@ const SubmitProductPage = () => {
                 sellerName: user.name,
             });
             toast.success('Product submitted for review!');
-            router.push('/dashboard/my-products');
+            router.push('/dashboard/customer/my-products');
         } catch (err) { toast.error(err.message); }
         finally { setLoading(false); }
     }
