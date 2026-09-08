@@ -42,7 +42,7 @@ const CheckoutPage = () => {
             await api.post('/orders/place', { addressId: selectedAddress, paymentMethod });
             await fetchCart();
             toast.success('Order placed!');
-            router.push('/dashboard/orders');
+            router.push('/dashboard/customer/orders');
         } catch (err) { toast.error(err.message); }
         finally { setLoading(false); }
     }

@@ -61,7 +61,7 @@ const Navbar = () => {
 
                     {isAdmin && (
                         <li>
-                            <Link href="/admin" className="rounded-full px-4 py-2 text-sm font-medium text-orange-600 dark:text-orange-400 transition hover:bg-white dark:hover:bg-zinc-800">
+                            <Link href="/dashboard/admin" className="rounded-full px-4 py-2 text-sm font-medium text-orange-600 dark:text-orange-400 transition hover:bg-white dark:hover:bg-zinc-800">
                                 Admin
                             </Link>
                         </li>
@@ -105,15 +105,8 @@ const Navbar = () => {
                                                 <Dropdown.Item key="dashboard" textValue="Dashboard">
                                                     <Link href="/dashboard" className="block w-full text-sm font-medium text-gray-700 hover:text-blue-600">Dashboard</Link>
                                                 </Dropdown.Item>
-                                                <Dropdown.Item key="orders" textValue="Orders">
-                                                    <Link href="/orders" className="block w-full text-sm font-medium text-gray-700 hover:text-blue-600">My Orders</Link>
-                                                </Dropdown.Item>
-                                                {isAdmin && (
-                                                    <Dropdown.Item key="admin" textValue="Admin Panel">
-                                                        <Link href="/admin" className="block w-full text-sm font-medium text-orange-600 hover:text-orange-700">Admin Panel</Link>
-                                                    </Dropdown.Item>
-                                                )}
-                                                <Dropdown.Item key="logout" textValue="Logout" variant="danger" onClick={handleLogout}>
+                                                
+                                                <Dropdown.Item key="logout" textValue="Logout" className="text-red-500 hover:bg-red-50 transition" variant="danger" onClick={handleLogout}>
                                                     <span className="text-sm font-medium">Log Out</span>
                                                 </Dropdown.Item>
                                             </Dropdown.Menu>
@@ -153,7 +146,7 @@ const Navbar = () => {
                             {navLinks.map(link => (
                                 <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="block rounded-xl px-4 py-3 text-base font-medium text-slate-600 hover:bg-blue-50/50 hover:text-blue-600 transition">{link.label}</Link>
                             ))}
-                            {isAdmin && <Link href="/admin" onClick={() => setMobileOpen(false)} className="block rounded-xl px-4 py-3 text-base font-medium text-orange-600 hover:bg-orange-50 transition">Admin Panel</Link>}
+                            {isAdmin && <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block rounded-xl px-4 py-3 text-base font-medium text-orange-600 hover:bg-orange-50 transition">Admin Panel</Link>}
                             <div className="border-t border-blue-50 pt-4 mt-2">
                                 {user ? (
                                     <div className="flex flex-col gap-2">
@@ -168,7 +161,7 @@ const Navbar = () => {
                                             </div>
                                         </div>
                                         <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-600 hover:bg-blue-50/50 transition">Dashboard</Link>
-                                        <Link href="/orders" onClick={() => setMobileOpen(false)} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-600 hover:bg-blue-50/50 transition">My Orders</Link>
+
                                         <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="w-full text-left rounded-xl px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 transition">Log Out</button>
                                     </div>
                                 ) : (
