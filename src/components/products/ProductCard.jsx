@@ -11,7 +11,11 @@ export default function ProductCard({ product }) {
     const { user } = useAuth();
 
     async function handleAddToCart(e) {
-        e.preventDefault();
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
         if (!user) {
             return toast.error('Please login to add to cart');
         }
@@ -53,7 +57,7 @@ export default function ProductCard({ product }) {
                     </Link>
                     <p className="text-xl font-extrabold text-blue-600 mt-1">${parseFloat(product.price).toFixed(2)}</p>
                 </div>
-                <Button size="sm" className="w-full bg-blue-600 text-white font-semibold hover:bg-blue-700 rounded-xl transition" onPress={handleAddToCart} isDisabled={outOfStock}>
+                <Button size="sm" className="w-full bg-blue-600 text-white font-semibold hover:bg-blue-700 rounded-xl transition" onClick={handleAddToCart} isDisabled={outOfStock}>
                     <FiShoppingCart size={14} className="mr-1.5" />
                     {outOfStock ? 'Out of Stock' : 'Add to Cart'}
                 </Button>
