@@ -1,42 +1,50 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import { api } from '@/lib/api';
 import ProductCard from '@/components/products/ProductCard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const CATEGORIES = ['All', 'Electronics', 'Footwear', 'Kitchen', 'Accessories', 'Books', 'Home', 'Other'];
 
 const ProductsPage = () => {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [search, setSearch] = useState('');
-    const [activeCategory, setActiveCategory] = useState('All');
+    const [search, setSearch] = useState(() => searchParams.get('search') ?? '');
+    const [activeCategory, setActiveCategory] = useState(() => {
+        const cat = searchParams.get('category');
+        return cat && CATEGORIES.includes(cat) ? cat : 'All';
+    });
 
     useEffect(() => {
-        async function fetchProducts() {
-            setLoading(true);
-            try {
-                const params = new URLSearchParams({ status: 'approved' });
-                if (search) {
-                    params.set('search', search);
-                }
-                if (activeCategory !== 'All') {
-                    params.set('category', activeCategory);
-                }
-                const data = await api.get(`/products?${params}`);
-                setProducts(data.products || []);
-            } catch {
-                setProducts([]);
-            } finally {
-                setLoading(false);
-            }
-        }
+        const params = new URLSearchParams();
+        if (search) params.set('search', search);
+        if (activeCategory !== 'All') params.set('category', activeCategory);
+        const qs = params.toString();
+        router.replace(qs ? `/products?${qs}` : '/products', { scroll: false });
+    }, [search, activeCategory, router]);
 
+    const fetchProducts = useCallback(async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams({ status: 'approved' });
+            if (search) params.set('search', search);
+            if (activeCategory !== 'All') params.set('category', activeCategory);
+            const data = await api.get(`/products?${params}`);
+            setProducts(data.products ?? []);
+        } catch { setProducts([]); }
+        finally { setLoading(false); }
+    }, [search, activeCategory]);
+
+    useEffect(() => {
         const t = setTimeout(fetchProducts, 350);
         return () => clearTimeout(t);
-    }, [search, activeCategory]);
+    }, [fetchProducts]);
 
     return (
         <>
