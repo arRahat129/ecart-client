@@ -1,21 +1,31 @@
 'use client';
 
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@heroui/react';
 import Link from 'next/link';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
-    const { login } = useAuth();
+    const { user, loading: authLoading, login } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [form, setForm] = useState({ email: '', password: '' });
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
+    const redirect = searchParams.get('redirect');
+    const registerHref = redirect ? `/auth/register?redirect=${encodeURIComponent(redirect)}` : '/auth/register';
+
+    useEffect(() => {
+        if (!authLoading && user) {
+            router.replace(redirect ?? '/dashboard');
+        }
+    }, [user, authLoading, router, redirect]);
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -23,13 +33,15 @@ const LoginPage = () => {
         try {
             await login(form.email, form.password);
             toast.success('Welcome back!');
-            router.push('/');
+            router.push(redirect ?? '/dashboard');
         } catch (err) {
             toast.error(err.message);
         } finally {
             setLoading(false);
         }
     }
+
+    if (authLoading || user) return null;
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-md">
@@ -80,7 +92,7 @@ const LoginPage = () => {
                     <Button type="submit" className="w-full h-12 bg-blue-600 text-white font-bold hover:bg-blue-700 rounded-xl shadow-md transition">Login</Button>
                 </form>
                 <p className="text-center text-sm text-zinc-500 mt-5">
-                    No account? <Link href="/auth/register" className="text-blue-600 font-semibold hover:underline">Register</Link>
+                    No account? <Link href={registerHref} className="text-blue-600 font-semibold hover:underline">Register</Link>
                 </p>
             </div>
         </motion.div>

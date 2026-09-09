@@ -5,24 +5,30 @@ import { FiShoppingCart, FiEye } from 'react-icons/fi';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export default function ProductCard({ product }) {
     const { addToCart } = useCart();
     const { user } = useAuth();
+    const router = useRouter();
 
     const isOwner = user && product.sellerId && user.id === product.sellerId;
-    const cannotBuy = !user || user.role === 'admin' || isOwner;
+    const isAdmin = user?.role === 'admin';
+    const outOfStock = product.stock === 0;
 
     async function handleAddToCart(e) {
-        if (e) {
+        if (e && typeof e.preventDefault === 'function') {
             e.preventDefault();
+        }
+        if (e && typeof e.stopPropagation === 'function') {
             e.stopPropagation();
         }
 
         if (!user) {
-            return toast.error('Please login to add to cart');
+            router.push(`/auth/login?redirect=/products/${product._id}`);
+            return;
         }
-        if (user.role === 'admin') {
+        if (isAdmin) {
             return toast.error('Admins cannot purchase products');
         }
         if (isOwner) {
@@ -35,11 +41,11 @@ export default function ProductCard({ product }) {
         catch (err) { toast.error(err.message); }
     }
 
-    const outOfStock = product.stock === 0;
-
     let btnLabel = outOfStock ? 'Out of Stock' : 'Add to Cart';
     if (isOwner) btnLabel = 'Your Product';
-    if (user?.role === 'admin') btnLabel = 'Admin View';
+    if (isAdmin) btnLabel = 'Admin View';
+
+    const isDisabled = (isOwner || isAdmin || outOfStock);
 
     return (
         <div className="group bg-white border border-zinc-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 rounded-2xl overflow-hidden flex flex-col">
@@ -72,9 +78,9 @@ export default function ProductCard({ product }) {
                 </div>
                 <Button
                     size="sm"
-                    className={`w-full rounded-xl transition font-semibold ${cannotBuy || outOfStock ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+                    className={`w-full rounded-xl transition font-semibold ${isDisabled ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
                     onPress={handleAddToCart}
-                    isDisabled={cannotBuy || outOfStock}
+                    isDisabled={isDisabled}
                 >
                     <FiShoppingCart size={14} className="mr-1.5" />
                     {btnLabel}

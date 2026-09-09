@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button, Spinner } from '@heroui/react';
 import { FiEye, FiEyeOff, FiImage, FiLink, FiLock, FiMail, FiUpload, FiUser, FiX } from 'react-icons/fi';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 async function uploadToImgBB(file) {
     const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
@@ -125,11 +125,21 @@ function AvatarUploader({ value, onChange }) {
 }
 
 const RegisterPage = () => {
-    const { register } = useAuth();
+    const { user, loading: authLoading, register } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [form, setForm] = useState({ name: '', email: '', password: '', image: '' });
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
+    const redirect = searchParams.get('redirect');
+    const loginHref = redirect ? `/auth/login?redirect=${encodeURIComponent(redirect)}` : '/auth/login';
+
+    useEffect(() => {
+        if (!authLoading && user) {
+            router.replace(redirect ?? '/dashboard');
+        }
+    }, [user, authLoading, router, redirect]);
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -137,7 +147,7 @@ const RegisterPage = () => {
         try {
             await register(form.name, form.email, form.password, form.image);
             toast.success('Account created! Please login.');
-            router.push('/auth/login');
+            router.push(loginHref);
         }
         catch (err) {
             toast.error(err.message);
@@ -146,6 +156,8 @@ const RegisterPage = () => {
             setLoading(false);
         }
     }
+
+    if (authLoading || user) return null;
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-md">
@@ -215,7 +227,7 @@ const RegisterPage = () => {
                     </Button>
                 </form>
                 <p className="text-center text-sm text-zinc-500 mt-5">
-                    Already have an account? <Link href="/auth/login" className="text-blue-600 font-semibold hover:underline">Login</Link>
+                    Already have an account? <Link href={loginHref} className="text-blue-600 font-semibold hover:underline">Login</Link>
                 </p>
             </div>
         </motion.div>
