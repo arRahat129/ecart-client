@@ -31,14 +31,26 @@ const ProductDetailPage = ({ params }) => {
     }, [id, router]);
 
     const isOwner = user && product?.sellerId && user.id === product.sellerId;
-    const cannotBuy = !user || user.role === 'admin' || isOwner;
+    const isAdmin = user?.role === 'admin';
+    const outOfStock = product?.stock === 0;
+    const cannotBuy = isAdmin || isOwner;
+    const isButtonDisabled = outOfStock || cannotBuy;
 
-    async function handleAddToCart() {
-        if (!user) {
-            return toast.error('Please login to add to cart');
+    async function handleAddToCart(e) {
+        if (e && typeof e.preventDefault === 'function') {
+            e.preventDefault();
         }
 
-        if (user.role === 'admin') {
+        if (e && typeof e.stopPropagation === 'function') {
+            e.stopPropagation();
+        }
+
+        if (!user) {
+            router.push(`/auth/login?redirect=${encodeURIComponent(`/products/${id}`)}`);
+            return;
+        }
+
+        if (isAdmin) {
             return toast.error('Admins cannot purchase products');
         }
 
@@ -59,6 +71,12 @@ const ProductDetailPage = ({ params }) => {
     if (!product) {
         return null;
     }
+
+    let btnLabel = 'Add to Cart';
+    if (outOfStock) btnLabel = 'Out of Stock';
+    else if (isOwner) btnLabel = 'Your Product';
+    else if (isAdmin) btnLabel = 'Admin View';
+    else if (!user) btnLabel = 'Login to Buy';
 
     return (
         <div className="max-w-6xl mx-auto w-full px-4 py-10">
@@ -115,12 +133,12 @@ const ProductDetailPage = ({ params }) => {
                     )}
 
                     <Button
-                        className={`h-12 font-bold rounded-xl transition shadow-lg ${cannotBuy || product.stock === 0 ? 'bg-zinc-100 text-zinc-400 shadow-none cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200/50'}`}
+                        className={`h-12 font-bold rounded-xl transition shadow-lg ${isButtonDisabled ? 'bg-zinc-100 text-zinc-400 shadow-none cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200/50'}`}
                         onPress={handleAddToCart}
-                        isDisabled={cannotBuy || product.stock === 0}
+                        isDisabled={isButtonDisabled}
                     >
                         <FiShoppingCart size={18} className="mr-2" />
-                        {product.stock === 0 ? 'Out of Stock' : isOwner ? 'Your Product' : user?.role === 'admin' ? 'Admin View' : 'Add to Cart'}
+                        {btnLabel}
                     </Button>
                     {
                         user && !cannotBuy && <Link href="/cart" className="text-center text-sm text-blue-600 hover:underline font-medium">View Cart →</Link>
