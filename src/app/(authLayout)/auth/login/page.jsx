@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useState, useEffect } from 'react';
 import { Button } from '@heroui/react';
 import Link from 'next/link';
@@ -9,8 +9,9 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
-const LoginPage = () => {
+function LoginForm() {
     const { user, loading: authLoading, login } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -89,13 +90,21 @@ const LoginPage = () => {
                         </div>
                     </div>
 
-                    <Button type="submit" className="w-full h-12 bg-blue-600 text-white font-bold hover:bg-blue-700 rounded-xl shadow-md transition">Login</Button>
+                    <Button type="submit" isLoading={loading} className="w-full h-12 bg-blue-600 text-white font-bold hover:bg-blue-700 rounded-xl shadow-md transition">Login</Button>
                 </form>
                 <p className="text-center text-sm text-zinc-500 mt-5">
                     No account? <Link href={registerHref} className="text-blue-600 font-semibold hover:underline">Register</Link>
                 </p>
             </div>
         </motion.div>
+    );
+}
+
+const LoginPage = () => {
+    return (
+        <Suspense fallback={<LoadingSpinner />}>
+            <LoginForm />
+        </Suspense>
     );
 };
 

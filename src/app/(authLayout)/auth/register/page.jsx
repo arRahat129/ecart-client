@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Button, Spinner } from '@heroui/react';
 import { FiEye, FiEyeOff, FiImage, FiLink, FiLock, FiMail, FiUpload, FiUser, FiX } from 'react-icons/fi';
@@ -8,6 +8,7 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 async function uploadToImgBB(file) {
     const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
@@ -124,7 +125,7 @@ function AvatarUploader({ value, onChange }) {
     );
 }
 
-const RegisterPage = () => {
+function RegisterForm() {
     const { user, loading: authLoading, register } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -222,7 +223,7 @@ const RegisterPage = () => {
                         </div>
                     </div>
 
-                    <Button type="submit" className="w-full h-12 bg-blue-600 text-white font-bold hover:bg-blue-700 rounded-xl shadow-md transition">
+                    <Button type="submit" isLoading={loading} className="w-full h-12 bg-blue-600 text-white font-bold hover:bg-blue-700 rounded-xl shadow-md transition">
                         Create Account
                     </Button>
                 </form>
@@ -231,6 +232,14 @@ const RegisterPage = () => {
                 </p>
             </div>
         </motion.div>
+    );
+}
+
+const RegisterPage = () => {
+    return (
+        <Suspense fallback={<LoadingSpinner />}>
+            <RegisterForm />
+        </Suspense>
     );
 };
 
