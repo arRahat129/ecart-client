@@ -30,10 +30,22 @@ const ProductDetailPage = ({ params }) => {
             .finally(() => setLoading(false));
     }, [id, router]);
 
+    const isOwner = user && product?.sellerId && user.id === product.sellerId;
+    const cannotBuy = !user || user.role === 'admin' || isOwner;
+
     async function handleAddToCart() {
         if (!user) {
             return toast.error('Please login to add to cart');
         }
+
+        if (user.role === 'admin') {
+            return toast.error('Admins cannot purchase products');
+        }
+
+        if (isOwner) {
+            return toast.error('You cannot buy your own product');
+        }
+
         try {
             await addToCart(product._id, qty);
             toast.success(`${product.name} added to cart`);
@@ -75,21 +87,44 @@ const ProductDetailPage = ({ params }) => {
                             {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
                         </span>
                     </div>
-                    {product.stock > 0 && (
-                        <div className="flex items-center gap-3">
-                            <span className="text-sm font-medium text-zinc-600">Quantity:</span>
-                            <div className="flex items-center border border-zinc-200 rounded-xl overflow-hidden">
-                                <button onClick={() => setQty(q => Math.max(1, q - 1))} className="px-3 py-2 text-zinc-600 hover:bg-zinc-100 transition font-bold">−</button>
-                                <span className="px-4 py-2 text-sm font-semibold min-w-10 text-center">{qty}</span>
-                                <button onClick={() => setQty(q => Math.min(product.stock, q + 1))} className="px-3 py-2 text-zinc-600 hover:bg-zinc-100 transition font-bold">+</button>
+                    {
+                        product.stock > 0 && !cannotBuy && (
+                            <div className="flex items-center gap-3">
+                                <span className="text-sm font-medium text-zinc-600">Quantity:</span>
+                                <div className="flex items-center border border-zinc-200 rounded-xl overflow-hidden">
+                                    <button onClick={() => setQty(q => Math.max(1, q - 1))} className="px-3 py-2 text-zinc-600 hover:bg-zinc-100 transition font-bold">−</button>
+                                    <span className="px-4 py-2 text-sm font-semibold min-w-10 text-center">{qty}</span>
+                                    <button onClick={() => setQty(q => Math.min(product.stock, q + 1))} className="px-3 py-2 text-zinc-600 hover:bg-zinc-100 transition font-bold">+</button>
+                                </div>
                             </div>
+                        )
+                    }
+
+                    {isOwner && (
+                        <div className="flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
+                            <span className="text-amber-500 text-base">⚠</span>
+                            <p className="text-xs text-amber-700 font-medium">This is your product. You cannot purchase your own listing.</p>
                         </div>
                     )}
-                    <Button className="h-12 bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-lg shadow-blue-200/50 rounded-xl transition" onPress={handleAddToCart} isDisabled={product.stock === 0}>
+
+                    {!isOwner && user?.role === 'admin' && (
+                        <div className="flex items-center gap-2 bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3">
+                            <span className="text-zinc-400 text-base">ℹ</span>
+                            <p className="text-xs text-zinc-500 font-medium">Admins cannot purchase products. Switch to a customer account to buy.</p>
+                        </div>
+                    )}
+
+                    <Button
+                        className={`h-12 font-bold rounded-xl transition shadow-lg ${cannotBuy || product.stock === 0 ? 'bg-zinc-100 text-zinc-400 shadow-none cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200/50'}`}
+                        onPress={handleAddToCart}
+                        isDisabled={cannotBuy || product.stock === 0}
+                    >
                         <FiShoppingCart size={18} className="mr-2" />
-                        {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                        {product.stock === 0 ? 'Out of Stock' : isOwner ? 'Your Product' : user?.role === 'admin' ? 'Admin View' : 'Add to Cart'}
                     </Button>
-                    {user && <Link href="/cart" className="text-center text-sm text-blue-600 hover:underline font-medium">View Cart &#8594;</Link>}
+                    {
+                        user && !cannotBuy && <Link href="/cart" className="text-center text-sm text-blue-600 hover:underline font-medium">View Cart →</Link>
+                    }
                 </motion.div>
             </div>
         </div>

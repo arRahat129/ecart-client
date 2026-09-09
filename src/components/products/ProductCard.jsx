@@ -10,6 +10,9 @@ export default function ProductCard({ product }) {
     const { addToCart } = useCart();
     const { user } = useAuth();
 
+    const isOwner = user && product.sellerId && user.id === product.sellerId;
+    const cannotBuy = !user || user.role === 'admin' || isOwner;
+
     async function handleAddToCart(e) {
         if (e) {
             e.preventDefault();
@@ -19,6 +22,12 @@ export default function ProductCard({ product }) {
         if (!user) {
             return toast.error('Please login to add to cart');
         }
+        if (user.role === 'admin') {
+            return toast.error('Admins cannot purchase products');
+        }
+        if (isOwner) {
+            return toast.error('You cannot buy your own product');
+        }
         try {
             await addToCart(product._id, 1);
             toast.success(`${product.name} added to cart`);
@@ -27,6 +36,10 @@ export default function ProductCard({ product }) {
     }
 
     const outOfStock = product.stock === 0;
+
+    let btnLabel = outOfStock ? 'Out of Stock' : 'Add to Cart';
+    if (isOwner) btnLabel = 'Your Product';
+    if (user?.role === 'admin') btnLabel = 'Admin View';
 
     return (
         <div className="group bg-white border border-zinc-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 rounded-2xl overflow-hidden flex flex-col">
@@ -57,9 +70,14 @@ export default function ProductCard({ product }) {
                     </Link>
                     <p className="text-xl font-extrabold text-blue-600 mt-1">${parseFloat(product.price).toFixed(2)}</p>
                 </div>
-                <Button size="sm" className="w-full bg-blue-600 text-white font-semibold hover:bg-blue-700 rounded-xl transition" onClick={handleAddToCart} isDisabled={outOfStock}>
+                <Button
+                    size="sm"
+                    className={`w-full rounded-xl transition font-semibold ${cannotBuy || outOfStock ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+                    onPress={handleAddToCart}
+                    isDisabled={cannotBuy || outOfStock}
+                >
                     <FiShoppingCart size={14} className="mr-1.5" />
-                    {outOfStock ? 'Out of Stock' : 'Add to Cart'}
+                    {btnLabel}
                 </Button>
             </div>
         </div>
