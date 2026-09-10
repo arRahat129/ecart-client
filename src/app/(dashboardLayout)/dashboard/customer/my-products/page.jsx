@@ -17,11 +17,13 @@ const MyProductsPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get(`/products?sellerId=${user?.id ?? user?._id}&limit=50`)
-      .then(data => setProducts(data.products))
+    const sellerId = user?.id ?? user?._id;
+    if (!sellerId) return;
+    api.get(`/products?sellerId=${sellerId}&limit=50`)
+      .then(data => setProducts(data.products ?? []))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
-  }, [user]);
+  }, [user?.id, user?._id]);
 
   if (loading) return <LoadingSpinner />;
 
