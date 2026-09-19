@@ -30,10 +30,11 @@ export function CartProvider({ children }) {
         fetchCart();
     }, [fetchCart]);
 
-    async function addToCart(productId, quantity = 1) {
+    async function addToCart(productId, quantity = 1, variantId) {
         const data = await api.post('/cart/add', {
             productId,
-            quantity
+            quantity,
+            variantId: variantId ?? undefined,
         });
         setCart(data);
     }
